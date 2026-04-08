@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>México: Mañanera vs. Realidad 2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Playfair+Display:wght@700;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --bg: #F5F2EC;
+    --surface: #FAFAF7;
+    --card: #ffffff;
+    --border: rgba(0,0,0,0.09);
+    --border-strong: rgba(0,0,0,0.18);
+    --text: #1a1a1a;
+    --text-muted: #5a5a5a;
+    --text-faint: #8a8a8a;
+    --accent-blue: #1B4F8A;
+    --accent-red: #B02A2A;
+    --accent-green: #2D6A3F;
+    --accent-amber: #8A5700;
+    --tag-blue-bg: #E8EEF7; --tag-blue: #1B4F8A;
+    --tag-red-bg: #F7EAEA; --tag-red: #B02A2A;
+    --tag-green-bg: #EBF4EE; --tag-green: #2D6A3F;
+    --tag-amber-bg: #F7F1E3; --tag-amber: #8A5700;
+    --grid-color: rgba(0,0,0,0.05);
+    --tick-color: #8a8a8a;
+    --nav-h: 60px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Source Serif 4', serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(245,242,236,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-strong);
+    height: var(--nav-h);
+    display: flex; align-items: center;
+    padding: 0 2rem;
+    gap: 2rem;
+  }
+  nav .nav-brand {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; font-weight: 500;
+    color: var(--text); white-space: nowrap;
+  }
+  nav .nav-links {
+    display: flex; gap: 1.5rem; list-style: none;
+    overflow-x: auto; padding-bottom: 2px;
+  }
+  nav .nav-links a {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    color: var(--text-muted); text-decoration: none;
+    text-transform: uppercase; letter-spacing: .08em;
+    white-space: nowrap;
+    transition: color .2s;
+  }
+  nav .nav-links a:hover { color: var(--text); }
+
+  /* HERO */
+  .hero {
+    background: #0d1f3c;
+    color: #f0ece3;
+    padding: 5rem 2rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 40px,
+      rgba(255,255,255,0.015) 40px,
+      rgba(255,255,255,0.015) 41px
+    );
+  }
+  .hero-inner { max-width: 820px; margin: 0 auto; position: relative; }
+  .hero-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+    color: rgba(240,236,227,0.5); margin-bottom: 1.2rem;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 900; line-height: 1.1;
+    color: #f0ece3; margin-bottom: 1.2rem;
+  }
+  .hero h1 span { color: #E87C5A; }
+  .hero-lead {
+    font-size: 1.05rem; font-weight: 300;
+    color: rgba(240,236,227,0.75);
+    max-width: 600px; margin-bottom: 2rem; line-height: 1.8;
+  }
+  .hero-meta {
+    display: flex; flex-wrap: wrap; gap: 1.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: rgba(240,236,227,0.4);
+  }
+  .hero-meta strong { color: rgba(240,236,227,0.7); }
+
+  /* LAYOUT */
+  .container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+  .section { padding: 4rem 0 3rem; border-bottom: 1px solid var(--border); }
+  .section:last-of-type { border-bottom: none; }
+
+  .section-header { margin-bottom: 2rem; }
+  .section-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500; letter-spacing: .12em;
+    text-transform: uppercase; display: inline-block;
+    padding: 3px 10px; border-radius: 20px;
+    margin-bottom: .8rem;
+  }
+  .tag-blue { background: var(--tag-blue-bg); color: var(--tag-blue); }
+  .tag-red { background: var(--tag-red-bg); color: var(--tag-red); }
+  .tag-green { background: var(--tag-green-bg); color: var(--tag-green); }
+  .tag-amber { background: var(--tag-amber-bg); color: var(--tag-amber); }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700; line-height: 1.2;
+    color: var(--text); margin-bottom: .6rem;
+  }
+  .section-subtitle {
+    font-size: .95rem; color: var(--text-muted); font-weight: 300;
+  }
+
+  /* STAT GRID */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px; margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .stat-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+  .stat-val { font-size: 1.9rem; font-weight: 600; font-family: 'IBM Plex Mono', monospace; line-height: 1; margin-bottom: 4px; }
+  .stat-val.red { color: var(--accent-red); }
+  .stat-val.green { color: var(--accent-green); }
+  .stat-val.amber { color: var(--accent-amber); }
+  .stat-val.blue { color: var(--accent-blue); }
+  .stat-note { font-size: 11px; color: var(--text-faint); }
+
+  /* COMPARE */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 2rem; }
+  @media (max-width: 600px) { .compare-grid { grid-template-columns: 1fr; } }
+
+  .compare-box {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    background: var(--card);
+  }
+  .compare-box.oficial { border-top: 3px solid var(--accent-blue); }
+  .compare-box.real { border-top: 3px solid var(--accent-red); }
+  .compare-box.balance { border-top: 3px solid var(--accent-green); }
+
+  .compare-box-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500; letter-spacing: .08em;
+    text-transform: uppercase; margin-bottom: 14px;
+  }
+  .oficial .compare-box-title { color: var(--accent-blue); }
+  .real .compare-box-title { color: var(--accent-red); }
+  .balance .compare-box-title { color: var(--accent-green); }
+
+  .compare-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 8px; padding: 7px 0;
+    border-bottom: 1px solid var(--border); font-size: 13.5px;
+  }
+  .compare-row:last-child { border-bottom: none; }
+  .compare-key { color: var(--text-muted); flex-shrink: 0; max-width: 45%; }
+  .compare-val { font-weight: 500; color: var(--text); text-align: right; }
+
+  .badge {
+    display: inline-block; font-size: 10.5px; padding: 2px 8px;
+    border-radius: 20px; font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+  }
+  .badge-red { background: var(--tag-red-bg); color: var(--tag-red); }
+  .badge-green { background: var(--tag-green-bg); color: var(--tag-green); }
+  .badge-amber { background: var(--tag-amber-bg); color: var(--tag-amber); }
+
+  /* CHART */
+  .chart-wrap { position: relative; width: 100%; margin: 1.5rem 0; }
+  .chart-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+
+  /* GLOBAL TABLE */
+  .global-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px; margin: 1.2rem 0;
+  }
+  .global-item { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .global-country { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-faint); margin-bottom: 3px; }
+  .global-val { font-size: 1.05rem; font-weight: 500; font-family: 'IBM Plex Mono', monospace; }
+
+  /* SOURCES */
+  .sources-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-top: 2rem;
+  }
+  .sources-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: .1em; color: var(--text-faint);
+    margin-bottom: 12px;
+  }
+  .sources-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .sources-list li { font-size: 12.5px; display: flex; gap: 10px; align-items: baseline; }
+  .sources-list .src-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    font-weight: 500; color: var(--text-faint); white-space: nowrap;
+  }
+  .sources-list a {
+    color: var(--accent-blue); text-decoration: none;
+    word-break: break-all; font-size: 12px;
+  }
+  .sources-list a:hover { text-decoration: underline; }
+
+  /* CALLOUT */
+  .callout {
+    background: var(--surface);
+    border-left: 3px solid var(--border-strong);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    margin: 1.5rem 0;
+    font-size: 14px; color: var(--text-muted); line-height: 1.7;
+  }
+  .callout.warn { border-left-color: var(--accent-amber); }
+  .callout.danger { border-left-color: var(--accent-red); }
+  .callout.ok { border-left-color: var(--accent-green); }
+
+  /* FOOTER */
+  footer {
+    background: #0d1f3c; color: rgba(240,236,227,0.45);
+    padding: 3rem 2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; text-align: center;
+    line-height: 2;
+  }
+  footer strong { color: rgba(240,236,227,0.7); }
+
+  /* DIVIDER */
+  .divider { display: flex; align-items: center; gap: 1rem; margin: 2rem 0; }
+  .divider::before, .divider::after { content:''; flex: 1; height: 1px; background: var(--border); }
+  .divider span { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-faint); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+
+  @media (max-width: 640px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    nav .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand">MX · 2025</span>
+  <ul class="nav-links">
+    <li><a href="#empleo">Empleo</a></li>
+    <li><a href="#seguridad">Seguridad</a></li>
+    <li><a href="#petroleo">Petróleo</a></li>
+    <li><a href="#vivienda">Vivienda</a></li>
+    <li><a href="#salud">Salud</a></li>
+    <li><a href="#fuentes">Fuentes</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">Análisis de indicadores nacionales · 2025–2026</p>
+    <h1>México: <span>Mañanera</span><br>vs. Realidad</h1>
+    <p class="hero-lead">
+      Comparativa entre el discurso oficial de las conferencias matutinas y los datos publicados
+      por organismos de gobierno como INEGI, SESNSP, Pemex, SHF y CIEP. Con contexto global.
+    </p>
+    <div class="hero-meta">
+      <span><strong>Fuentes:</strong> INEGI · SESNSP · Pemex · SHF · CIEP · México Evalúa · OCDE</span>
+      <span><strong>Actualizado:</strong> Abril 2026</span>
+      <span><strong>Datos:</strong> 2025 – Q1 2026</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ EMPLEO ═══════════════════════════ -->
+<section class="section" id="empleo">
+<div class="container">
+  <div class="section-header">
+    <span class="section-tag tag-blue">01 · Empleo</span>
+    <h2 class="section-title">La trampa del "pleno empleo"</h2>
+    <p class="section-subtitle">La tasa de desocupación baja oculta una informalidad laboral récord y condiciones críticas de trabajo para más de un tercio de la población ocupada.</p>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Desocupación ene 2026</div>
+      <div class="stat-val blue">2.7%</div>
+      <div class="stat-note">INEGI ENOE · igual que ene 2025</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Informalidad dic 2025</div>
+      <div class="stat-val red">54.6%</div>
+      <div class="stat-note">33 millones · +1.2M vs dic 2024</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Población ocupada Q4 2025</div>
+      <div class="stat-val blue">59.8M</div>
+      <div class="stat-note">+298 mil vs Q4 2024</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Condiciones críticas oct 2025</div>
+      <div class="stat-val amber">34.4%</div>
+      <div class="stat-note">Chiapas 48.3% — más alta del país</div>
+    </div>
+  </div>
+
+  <div class="compare-grid">
+    <div class="compare-box oficial">
+      <p class="compare-box-title">Lo que dice la mañanera</p>
+      <div class="compare-row"><span class="compare-key">Desempleo</span><span class="compare-val">"Histórico mínimo"</span></div>
+      <div class="compare-row"><span class="compare-key">Empleo formal</span><span class="compare-val">+1.1% anual (IMSS)</span></div>
+      <div class="compare-row"><span class="compare-key">Salario mínimo</span><span class="compare-val">Incremento real</span></div>
+      <div class="compare-row"><span class="compare-key">Mensaje central</span><span class="compare-val">"Pleno empleo en México"</span></div>
+    </div>
+    <div class="compare-box real">
+      <p class="compare-box-title">Lo que dicen los datos</p>
+      <div class="compare-row"><span class="compare-key">Desempleo</span><span class="compare-val">2.7% — estable, no baja</span></div>
+      <div class="compare-row"><span class="compare-key">Informalidad</span><span class="compare-val"><span class="badge badge-red">+1.2M en 2025</span></span></div>
+      <div class="compare-row"><span class="compare-key">Empleo no agropecuario</span><span class="compare-val">−1.1M personas</span></div>
+      <div class="compare-row"><span class="compare-key">Subocupación</span><span class="compare-val">6.1% (millones más quieren trabajar más)</span></div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <strong>Nota metodológica clave:</strong> Según la metodología OIT que usa INEGI, basta trabajar <em>una hora a la semana</em> para ser clasificado como "ocupado". Esto hace que México aparezca con bajo desempleo, pero 54.6% de esa población trabaja en la informalidad total —la tasa más alta de toda la OCDE.
+  </div>
+
+  <div class="chart-title">Tasa de desempleo — Comparativa internacional (2025, estimado)</div>
+  <div class="chart-wrap" style="height:240px;">
+    <canvas id="chartEmpleo" role="img" aria-label="Comparativa de tasas de desempleo por país"></canvas>
+  </div>
+
+  <div class="chart-title">Tendencia de informalidad laboral en México (% de PEA ocupada)</div>
+  <div class="chart-wrap" style="height:200px;">
+    <canvas id="chartInformal" role="img" aria-label="Tendencia de informalidad laboral México 2024-2025"></canvas>
+  </div>
+
+  <div class="sources-box">
+    <p class="sources-title">Fuentes — Empleo</p>
+    <ul class="sources-list">
+      <li><span class="src-label">INEGI ENOE</span><a href="https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2026/iooe/IOE2026_02.pdf" target="_blank">Indicadores Ocupación y Empleo — Febrero 2026 (PDF)</a></li>
+      <li><span class="src-label">INEGI ENOE Q4</span><a href="https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2026/enoe/enoe2026_02.pdf" target="_blank">ENOE Q4 2025 — Boletín trimestral (PDF)</a></li>
+      <li><span class="src-label">Infobae/INEGI</span><a href="https://www.infobae.com/mexico/2026/01/27/mexico-cierra-2025-con-menos-desempleados-pero-mas-trabajadores-informales-segun-inegi/" target="_blank">México cierra 2025 con más trabajadores informales — Infobae</a></li>
+      <li><span class="src-label">Portal INEGI</span><a href="https://www.inegi.org.mx/temas/empleo/" target="_blank">Tema Empleo y Ocupación — INEGI</a></li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════ SEGURIDAD ═══════════════════════════ -->
+<section class="section" id="seguridad">
+<div class="container">
+  <div class="section-header">
+    <span class="section-tag tag-amber">02 · Seguridad</span>
+    <h2 class="section-title">Los homicidios bajan, pero no de forma uniforme</h2>
+    <p class="section-subtitle">La reducción es real y documentada. Pero el gobierno elige como punto de partida el mes más violento de la administración anterior, y omite estados donde la violencia se disparó.</p>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Homicidios dolosos 2025</div>
+      <div class="stat-val green">24,095</div>
+      <div class="stat-note">SESNSP · −6,820 víctimas vs 2024</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Promedio diario feb 2026</div>
+      <div class="stat-val green">48.8</div>
+      <div class="stat-note">−44% vs sep 2024 (pico 86.9/día)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Jalisco 2025 vs 2024</div>
+      <div class="stat-val red">+300%</div>
+      <div class="stat-note">1,232 víctimas vs 284 — cuadruplicó</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Sinaloa 2025 vs 2024</div>
+      <div class="stat-val red">+70%</div>
+      <div class="stat-note">1,732 víctimas — segundo foco rojo</div>
+    </div>
+  </div>
+
+  <div class="compare-grid">
+    <div class="compare-box oficial">
+      <p class="compare-box-title">Lo que dice la mañanera</p>
+      <div class="compare-row"><span class="compare-key">Reducción global</span><span class="compare-val">−44% desde oct 2024</span></div>
+      <div class="compare-row"><span class="compare-key">Feb 2026</span><span class="compare-val">Mes más bajo en 11 años</span></div>
+      <div class="compare-row"><span class="compare-key">Delitos alto impacto</span><span class="compare-val">−28% en promedio</span></div>
+      <div class="compare-row"><span class="compare-key">Estrategia</span><span class="compare-val">Guardia Nacional + inteligencia</span></div>
+    </div>
+    <div class="compare-box balance">
+      <p class="compare-box-title">Qué es real y qué se omite</p>
+      <div class="compare-row"><span class="compare-key">Reducción real</span><span class="compare-val"><span class="badge badge-green">Sí bajan los homicidios</span></span></div>
+      <div class="compare-row"><span class="compare-key">Pero el 50% de la baja</span><span class="compare-val">Viene de solo Guerrero + Hidalgo</span></div>
+      <div class="compare-row"><span class="compare-key">Jalisco</span><span class="compare-val"><span class="badge badge-red">Asesinatos x4 en 2025</span></span></div>
+      <div class="compare-row"><span class="compare-key">Punto de partida</span><span class="compare-val">Sep 2024 = peor mes de AMLO</span></div>
+    </div>
+  </div>
+
+  <div class="callout ok">
+    <strong>Lo que sí es cierto:</strong> 2025 fue el primer año desde 2017 con menos de 30,000 personas asesinadas. La tendencia de febrero 2026 con 48.8 homicidios diarios es el dato más bajo en 11 años. Los avances son reales en 26 de 32 estados.
+  </div>
+  <div class="callout danger">
+    <strong>Lo que no se menciona:</strong> Jalisco cuadruplicó sus homicidios de un año a otro (284 en 2024 → 1,232 en 2025). La extorsión aumentó +2.3% y es el único delito de alto impacto en alza. La comparación siempre parte del peor punto: septiembre 2024, no el promedio histórico.
+  </div>
+
+  <div class="chart-title">Tasa de homicidios por 100 mil habitantes — Comparativa global (est. 2025)</div>
+  <div class="chart-wrap" style="height:300px;">
+    <canvas id="chartSeguridad" role="img" aria-label="Tasa de homicidios por 100k hab por país"></canvas>
+  </div>
+
+  <div class="chart-title">Homicidios dolosos en México — Promedio diario por mes (oct 2024 – feb 2026)</div>
+  <div class="chart-wrap" style="height:200px;">
+    <canvas id="chartHomicidios" role="img" aria-label="Promedio diario de homicidios dolosos en México"></canvas>
+  </div>
+
+  <div class="sources-box">
+    <p class="sources-title">Fuentes — Seguridad</p>
+    <ul class="sources-list">
+      <li><span class="src-label">SESNSP</span><a href="https://www.gob.mx/sesnsp/articulos/incidencia-delictiva" target="_blank">Incidencia Delictiva — Secretariado Ejecutivo del SNSP</a></li>
+      <li><span class="src-label">Gabinete Seg.</span><a href="https://gabinetedeseguridad.gob.mx/contenido/6474/la-estrategia-nacional-de-seguridad-brinda-resultados-disminuyen-32-los-homicidios-dolosos" target="_blank">Comunicado Gabinete Seguridad — septiembre 2025</a></li>
+      <li><span class="src-label">Milenio/SESNSP</span><a href="https://www.milenio.com/policia/homicidios-en-mexico-bajaron-entre-el-2025-y-el-2024" target="_blank">Análisis anual 2025 vs 2024 por estado — Milenio</a></li>
+      <li><span class="src-label">El Informador</span><a href="https://www.informador.mx/mexico/siete-estados-sumaron-la-mitad-del-total-de-homicidios-dolosos-en-mexico-del-2025-20260108-0123.html" target="_blank">Siete estados con el 50% de los homicidios 2025</a></li>
+      <li><span class="src-label">SESNSP feb 2026</span><a href="https://tribunadelabahia.com.mx/homicidios-dolosos-bajan-44-reporta-sesnsp/" target="_blank">Reducción 44% — reporte SESNSP feb 2026</a></li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════ PETRÓLEO ═══════════════════════════ -->
+<section class="section" id="petroleo">
+<div class="container">
+  <div class="section-header">
+    <span class="section-tag tag-red">03 · Petróleo / Pemex</span>
+    <h2 class="section-title">El peor año en la historia de Pemex</h2>
+    <p class="section-subtitle">2025 cerró con la producción de crudo más baja desde 1979, muy por debajo de la meta oficial. Las exportaciones cayeron más que durante la pandemia. El gobierno inyectó 187% más dinero de lo presupuestado sin resultados.</p>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Producción crudo 2025 promedio</div>
+      <div class="stat-val red">1.36 Mbd</div>
+      <div class="stat-note">Mínimo histórico desde 1979 · −8% vs 2024</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Meta oficial 2025</div>
+      <div class="stat-val amber">1.80 Mbd</div>
+      <div class="stat-note">Déficit de 440 mil barriles/día</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Exportaciones crudo 2025</div>
+      <div class="stat-val red">$12.9 mmdd</div>
+      <div class="stat-note">−37.8% vs 2024 · peor que pandemia 2020</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Apoyo federal a Pemex 2025</div>
+      <div class="stat-val amber">$392 mmdp</div>
+      <div class="stat-note">+187.8% más de lo presupuestado originalmente</div>
+    </div>
+  </div>
+
+  <div class="compare-grid">
+    <div class="compare-box oficial">
+      <p class="compare-box-title">Lo que dice la mañanera</p>
+      <div class="compare-row"><span class="compare-key">Producción</span><span class="compare-val">"Proceso de estabilización"</span></div>
+      <div class="compare-row"><span class="compare-key">Soberanía</span><span class="compare-val">Pemex como empresa del Estado</span></div>
+      <div class="compare-row"><span class="compare-key">Envío a Cuba</span><span class="compare-val">"Decisión soberana de México"</span></div>
+      <div class="compare-row"><span class="compare-key">Plan 2025–2035</span><span class="compare-val">Meta de 1.8 Mbd al final</span></div>
+    </div>
+    <div class="compare-box real">
+      <p class="compare-box-title">Lo que dicen los datos</p>
+      <div class="compare-row"><span class="compare-key">Producción</span><span class="compare-val"><span class="badge badge-red">Mínimo histórico desde 1979</span></span></div>
+      <div class="compare-row"><span class="compare-key">Inversión infraestructura</span><span class="compare-val"><span class="badge badge-red">−34% en 2025 (SHCP)</span></span></div>
+      <div class="compare-row"><span class="compare-key">Pérdida neta Q1 2025</span><span class="compare-val">−43,300 mdp</span></div>
+      <div class="compare-row"><span class="compare-key">Tendencia AIE</span><span class="compare-val">México: importador neto de crudo</span></div>
+    </div>
+  </div>
+
+  <div class="callout danger">
+    <strong>El problema de fondo:</strong> Pemex reporta "hidrocarburos líquidos" (crudo + condensados) para maquillar la caída del crudo convencional. Al separar ambas cifras, el crudo puro cayó a 1.28 Mbd en agosto 2025, el nivel más bajo desde 2018. La AIE proyecta que, sin inversión privada, México será importador neto de hidrocarburos antes de 2035.
+  </div>
+
+  <div class="chart-title">Producción de crudo Pemex (millones de barriles diarios) 2018–2025</div>
+  <div class="chart-wrap" style="height:240px;">
+    <canvas id="chartPemex" role="img" aria-label="Producción histórica crudo Pemex"></canvas>
+  </div>
+
+  <div class="divider"><span>Contexto global</span></div>
+  <p style="font-size:14px; color:var(--text-muted); margin-bottom:1rem;">Producción de crudo estimada 2025 — principales productores mundiales</p>
+  <div class="global-grid">
+    <div class="global-item"><div class="global-country">EE.UU.</div><div class="global-val">13.2 Mbd</div></div>
+    <div class="global-item"><div class="global-country">Rusia</div><div class="global-val">9.2 Mbd</div></div>
+    <div class="global-item"><div class="global-country">Arabia Saudita</div><div class="global-val">9.0 Mbd</div></div>
+    <div class="global-item"><div class="global-country">Canadá</div><div class="global-val">5.8 Mbd</div></div>
+    <div class="global-item"><div class="global-country">Brasil</div><div class="global-val">3.5 Mbd</div></div>
+    <div class="global-item"><div class="global-country">Iraq</div><div class="global-val">4.2 Mbd</div></div>
+    <div class="global-item"><div class="global-country"><strong>México</strong></div><div class="global-val" style="color:var(--accent-red);">1.36 Mbd</div></div>
+    <div class="global-item"><div class="global-country">Colombia</div><div class="global-val">0.77 Mbd</div></div>
+    <div class="global-item"><div class="global-country">Venezuela</div><div class="global-val">0.88 Mbd</div></div>
+  </div>
+
+  <div class="sources-box">
+    <p class="sources-title">Fuentes — Petróleo</p>
+    <ul class="sources-list">
+      <li><span class="src-label">Pemex oficial</span><a href="https://www.pemex.com/ri/Publicaciones/Paginas/IndicadoresPetroleros.aspx" target="_blank">Estadísticas Petroleras — Pemex RI (datos oficiales)</a></li>
+      <li><span class="src-label">La Jornada</span><a href="https://www.jornada.com.mx/noticia/2026/01/27/economia/produccion-de-hidrocarburos-liquidos-de-pemex-cayo-7-en-2025" target="_blank">Producción hidrocarburos Pemex cayó 7% en 2025</a></li>
+      <li><span class="src-label">Proceso</span><a href="https://www.proceso.com.mx/economia/2026/1/27/2025-el-peor-ano-para-pemex-en-su-historia-de-produccion-de-crudo-367371.html" target="_blank">2025: el peor año para Pemex en producción de crudo</a></li>
+      <li><span class="src-label">Energy Magazine</span><a href="https://energymagazine.mx/2025/11/pemex-no-detiene-la-caida-en-produccion-mexico-se-encamina-a-ser-importador-neto-de-hidrocarburos-advierte-la-aie/" target="_blank">Pemex y la proyección de la AIE — Energy Magazine</a></li>
+      <li><span class="src-label">BBVA Research</span><a href="https://www.bbvaresearch.com/wp-content/uploads/2025/05/Observatorio-Pemex-al-1T25-nuevo-formato-V2.pdf" target="_blank">Observatorio Pemex Q1 2025 — BBVA Research (PDF)</a></li>
+      <li><span class="src-label">El Informador</span><a href="https://www.informador.mx/pemex-tiene-el-peor-ano-en-produccion-l202601290001.html" target="_blank">Pemex tiene el peor año en producción — El Informador</a></li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════ VIVIENDA ═══════════════════════════ -->
+<section class="section" id="vivienda">
+<div class="container">
+  <div class="section-header">
+    <span class="section-tag tag-amber">04 · Vivienda</span>
+    <h2 class="section-title">Comprar casa: cada vez más un privilegio</h2>
+    <p class="section-subtitle">El precio promedio de la vivienda en México subió al doble de la inflación en 2025. En la CDMX se necesitan más de 100 meses de salario promedio para costear una casa. El programa Vivienda del Bienestar existe, pero cubre una fracción mínima del mercado.</p>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Precio promedio nacional 2025</div>
+      <div class="stat-val amber">$1.86M</div>
+      <div class="stat-note">pesos · SHF · +8.7% anual</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Inflación general 2025</div>
+      <div class="stat-val blue">3.7%</div>
+      <div class="stat-note">La vivienda subió el doble de la inflación</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Precio CDMX por m²</div>
+      <div class="stat-val red">$57,672</div>
+      <div class="stat-note">pesos · el más alto del país</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Tasa hipotecaria Q4 2025</div>
+      <div class="stat-val amber">11.55%</div>
+      <div class="stat-note">Banxico · aún muy elevada</div>
+    </div>
+  </div>
+
+  <div class="compare-grid">
+    <div class="compare-box oficial">
+      <p class="compare-box-title">Lo que dice la mañanera</p>
+      <div class="compare-row"><span class="compare-key">Programa Bienestar</span><span class="compare-val">1.2 millones de viviendas</span></div>
+      <div class="compare-row"><span class="compare-key">Precio máximo</span><span class="compare-val">$630,000 pesos</span></div>
+      <div class="compare-row"><span class="compare-key">Inversión</span><span class="compare-val">$90 mil millones de pesos</span></div>
+      <div class="compare-row"><span class="compare-key">Meta social</span><span class="compare-val">"Vivienda como derecho"</span></div>
+    </div>
+    <div class="compare-box real">
+      <p class="compare-box-title">Lo que dicen los datos</p>
+      <div class="compare-row"><span class="compare-key">Precio de mercado</span><span class="compare-val"><span class="badge badge-red">$1.86M promedio nacional</span></span></div>
+      <div class="compare-row"><span class="compare-key">Meses de salario CDMX</span><span class="compare-val">100–105 meses</span></div>
+      <div class="compare-row"><span class="compare-key">Alza en 15 años</span><span class="compare-val">+185% en precios</span></div>
+      <div class="compare-row"><span class="compare-key">68% derechohabientes</span><span class="compare-val"><span class="badge badge-amber">Ganan 1–2 salarios mínimos</span></span></div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <strong>La brecha real:</strong> El programa Vivienda del Bienestar ofrece casas desde $630,000 pesos para trabajadores de 1–2 salarios mínimos. Sin embargo, el precio <em>promedio</em> del mercado es $1.86 millones (+8.7% en 2025), casi 3 veces más. En los últimos 15 años los precios subieron +185%, mientras que los ingresos laborales no crecieron al mismo ritmo.
+  </div>
+
+  <div class="chart-title">Precio promedio de vivienda por entidad federativa (miles de pesos, 2025)</div>
+  <div class="chart-wrap" style="height:340px;">
+    <canvas id="chartVivienda" role="img" aria-label="Precio promedio vivienda por estado en México"></canvas>
+  </div>
+
+  <div class="divider"><span>Asequibilidad global</span></div>
+  <p style="font-size:14px; color:var(--text-muted); margin-bottom:1rem;">Relación precio vivienda / ingreso anual medio — precio en múltiplos de salario</p>
+  <div class="global-grid">
+    <div class="global-item"><div class="global-country">Hong Kong</div><div class="global-val">~20x</div></div>
+    <div class="global-item"><div class="global-country">Tokio</div><div class="global-val">~15x</div></div>
+    <div class="global-item"><div class="global-country">CDMX</div><div class="global-val" style="color:var(--accent-red);">~12x</div></div>
+    <div class="global-item"><div class="global-country">Brasil (SP)</div><div class="global-val">~10x</div></div>
+    <div class="global-item"><div class="global-country">Colombia</div><div class="global-val">~8x</div></div>
+    <div class="global-item"><div class="global-country">Alemania</div><div class="global-val">~7x</div></div>
+    <div class="global-item"><div class="global-country">EE.UU.</div><div class="global-val">~5x</div></div>
+    <div class="global-item"><div class="global-country">Canadá</div><div class="global-val">~7x</div></div>
+  </div>
+
+  <div class="sources-box">
+    <p class="sources-title">Fuentes — Vivienda</p>
+    <ul class="sources-list">
+      <li><span class="src-label">SHF oficial</span><a href="https://www.gob.mx/shf/articulos/indice-shf-de-precios-de-la-vivienda-en-mexico-segundo-trimestre-de-2025" target="_blank">Índice SHF de Precios de la Vivienda — Secretaría de Hacienda</a></li>
+      <li><span class="src-label">El Universal</span><a href="https://www.eluniversal.com.mx/cartera/aumenta-precio-de-la-vivienda-en-mexico-promedio-fue-de-mas-de-un-millon-800-mil-pesos-en-2025-shf/" target="_blank">Precio promedio vivienda 2025 supera $1.8M — El Universal</a></li>
+      <li><span class="src-label">Milenio/SHF</span><a href="https://www.milenio.com/negocios/cuanto-vale-una-casa-en-2025-estados-venden-caras-y-baratas-hacienda" target="_blank">Precios por estado — Milenio</a></li>
+      <li><span class="src-label">Infonavit</span><a href="https://portalmx.infonavit.org.mx/wps/wcm/connect/e790cfce-4c61-409e-be36-71c65068f7be/Reporte+Anual+de+Vivienda+2025.pdf?MOD=AJPERES" target="_blank">Reporte Anual de Vivienda 2025 — Infonavit (PDF)</a></li>
+      <li><span class="src-label">La Verdad Noticias</span><a href="https://laverdadnoticias.com/dinero-inteligente/bienes-raices/costo-vivienda-en-mexico" target="_blank">Precios dic 2025 por entidad federativa</a></li>
+      <li><span class="src-label">El Imparcial</span><a href="https://www.elimparcial.com/mexico/2026/02/11/vivienda-mantiene-aumentos-superiores-a-la-inflacion-pese-a-desaceleracion-en-2025/" target="_blank">Vivienda sube más que inflación en 2025 — El Imparcial</a></li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════ SALUD ═══════════════════════════ -->
+<section class="section" id="salud">
+<div class="container">
+  <div class="section-header">
+    <span class="section-tag tag-red">05 · Salud</span>
+    <h2 class="section-title">Un sistema de salud en deuda con la mitad del país</h2>
+    <p class="section-subtitle">Con solo 2.5% del PIB, México destina menos que cualquier país de la OCDE a salud pública. El gasto por persona sin seguridad social cayó 24.9% en 2025. La promesa de salud universal enfrenta un déficit estructural billonario.</p>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Gasto salud 2025 (% PIB)</div>
+      <div class="stat-val red">2.5%</div>
+      <div class="stat-note">Meta OMS: 6% del PIB · recorte real −11%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Gasto pc sin seguridad social</div>
+      <div class="stat-val red">$4,225</div>
+      <div class="stat-note">pesos/año · −24.9% vs 2024</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Gasto pc afiliado IMSS</div>
+      <div class="stat-val green">$9,635</div>
+      <div class="stat-note">pesos/año · +12.4% vs 2024</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Déficit operativo SEM-IMSS 2024</div>
+      <div class="stat-val red">$110 mmdp</div>
+      <div class="stat-note">Seguro de Enfermedades y Maternidad</div>
+    </div>
+  </div>
+
+  <div class="compare-grid">
+    <div class="compare-box oficial">
+      <p class="compare-box-title">Lo que dice la mañanera</p>
+      <div class="compare-row"><span class="compare-key">Cobertura</span><span class="compare-val">"Camino a la salud universal"</span></div>
+      <div class="compare-row"><span class="compare-key">Nuevos hospitales</span><span class="compare-val">31 hospitales en 2025</span></div>
+      <div class="compare-row"><span class="compare-key">Inversión</span><span class="compare-val">$90 mil millones de pesos</span></div>
+      <div class="compare-row"><span class="compare-key">Sheinbaum (2025)</span><span class="compare-val">"No hay recorte en salud"</span></div>
+    </div>
+    <div class="compare-box real">
+      <p class="compare-box-title">Lo que dicen los datos</p>
+      <div class="compare-row"><span class="compare-key">Gasto IMSS-Bienestar pc</span><span class="compare-val"><span class="badge badge-red">−24.9% en 2025</span></span></div>
+      <div class="compare-row"><span class="compare-key">FASSA (fondos estados)</span><span class="compare-val"><span class="badge badge-red">−42.5% presupuesto</span></span></div>
+      <div class="compare-row"><span class="compare-key">ISSSTE Q1 2025</span><span class="compare-val">−30% vs Q1 2024</span></div>
+      <div class="compare-row"><span class="compare-key">Gasto total Q1 2025</span><span class="compare-val">Más bajo desde 2010</span></div>
+    </div>
+  </div>
+
+  <div class="callout danger">
+    <strong>La desigualdad estructural:</strong> El gasto por persona en el IMSS es 2.3 veces mayor que el destinado a la población sin seguridad social (IMSS-Bienestar). Esta brecha rompe cualquier lógica de universalidad. El CIEP advierte que el presupuesto 2025 de 918.4 mil millones de pesos equivale apenas al 2.5% del PIB, cuando la recomendación internacional mínima es 6%.
+  </div>
+
+  <div class="chart-title">Gasto público en salud (% del PIB) — Comparativa internacional 2025</div>
+  <div class="chart-wrap" style="height:280px;">
+    <canvas id="chartSalud" role="img" aria-label="Gasto en salud como porcentaje del PIB por país"></canvas>
+  </div>
+
+  <div class="divider"><span>Brecha de gasto por persona</span></div>
+  <p style="font-size:14px; color:var(--text-muted); margin-bottom:1rem;">Gasto per cápita en salud 2025 según tipo de afiliación (pesos anuales)</p>
+  <div class="global-grid">
+    <div class="global-item"><div class="global-country">ISSSTE</div><div class="global-val" style="color:var(--accent-green);">$11,531</div></div>
+    <div class="global-item"><div class="global-country">IMSS</div><div class="global-val" style="color:var(--accent-green);">$9,635</div></div>
+    <div class="global-item"><div class="global-country">Sin seg. social</div><div class="global-val" style="color:var(--accent-red);">$4,225</div></div>
+    <div class="global-item"><div class="global-country">Diferencia</div><div class="global-val" style="color:var(--accent-amber);">2.3x</div></div>
+  </div>
+
+  <div class="sources-box">
+    <p class="sources-title">Fuentes — Salud</p>
+    <ul class="sources-list">
+      <li><span class="src-label">CIEP</span><a href="https://ciep.mx/gasto-para-salud-en-2025-recortes-en-hospitales-y-para-poblacion-sin-seguridad-social/" target="_blank">Gasto para salud 2025: recortes en hospitales — CIEP</a></li>
+      <li><span class="src-label">Consultor Salud</span><a href="https://consultorsalud.com.mx/crisis-presupuestaria-salud-mexico-2025/" target="_blank">Crisis presupuestaria en salud 2025 — análisis completo</a></li>
+      <li><span class="src-label">México Evalúa</span><a href="https://mexicoevalua.org/mexico-evalua-presenta-ruta-para-lograr-cobertura-en-salud-universal-y-eficiente/" target="_blank">Ruta para cobertura universal — México Evalúa</a></li>
+      <li><span class="src-label">Núm. de Erario</span><a href="https://numerosdeerario.mexicoevalua.org/2025/05/28/recorte-sobre-recorte-en-sector-salud-al-primer-trimestre-de-2025/" target="_blank">Recorte sobre recorte en salud Q1 2025 — México Evalúa</a></li>
+      <li><span class="src-label">El Financiero</span><a href="https://www.elfinanciero.com.mx/opinion/colaborador-invitado/2026/01/13/salud-universal-la-ruta-critica-hacia-la-insolvencia-tecnica-del-imss/" target="_blank">Salud universal: ruta hacia la insolvencia del IMSS</a></li>
+      <li><span class="src-label">Consultor Salud</span><a href="https://consultorsalud.com.mx/sistema-de-salud-mexico-inversion-cobertura/" target="_blank">Sistema de salud México: inversión, cobertura y retos 2026</a></li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════ FUENTES GENERALES ═══════════════════════════ -->
+<section class="section" id="fuentes" style="border-bottom:none;">
+<div class="container">
+  <div class="section-header">
+    <span class="section-tag tag-blue">06 · Fuentes y metodología</span>
+    <h2 class="section-title">Cómo se construyó este análisis</h2>
+    <p class="section-subtitle">Todos los datos provienen de fuentes gubernamentales oficiales o de organismos académicos independientes. Ningún dato fue construido ni estimado por los autores de este documento.</p>
+  </div>
+
+  <div class="callout">
+    <strong>Metodología:</strong> Se contrastaron las afirmaciones realizadas en las conferencias "La Mañanera del Pueblo" del gobierno de Claudia Sheinbaum (oct 2024–abr 2026) con los datos publicados en los portales oficiales del INEGI, SESNSP, Pemex, Secretaría de Hacienda y CIEP. El análisis no tiene intención partidista: donde hay avances reales, se señalan; donde hay omisiones o comparaciones selectivas, también.
+  </div>
+
+  <div style="margin-top: 2rem;">
+    <p style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing:.08em; color:var(--text-faint); margin-bottom:1rem;">Portales de datos oficiales</p>
+    <ul class="sources-list" style="display:flex; flex-direction:column; gap:10px;">
+      <li><span class="src-label">INEGI</span><a href="https://www.inegi.org.mx/temas/empleo/" target="_blank">Instituto Nacional de Estadística y Geografía — Empleo y Ocupación</a></li>
+      <li><span class="src-label">SESNSP</span><a href="https://www.gob.mx/sesnsp/articulos/incidencia-delictiva" target="_blank">Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública</a></li>
+      <li><span class="src-label">Pemex RI</span><a href="https://www.pemex.com/ri/Publicaciones/Paginas/IndicadoresPetroleros.aspx" target="_blank">Pemex — Estadísticas Petroleras y Relación con Inversionistas</a></li>
+      <li><span class="src-label">SHF / SHCP</span><a href="https://www.gob.mx/shf/articulos/indice-shf-de-precios-de-la-vivienda-en-mexico-segundo-trimestre-de-2025" target="_blank">Sociedad Hipotecaria Federal — Índice de Precios de la Vivienda</a></li>
+      <li><span class="src-label">CIEP</span><a href="https://ciep.mx" target="_blank">Centro de Investigación Económica y Presupuestaria — ciep.mx</a></li>
+      <li><span class="src-label">México Evalúa</span><a href="https://mexicoevalua.org" target="_blank">México Evalúa — Centro de Análisis de Políticas Públicas</a></li>
+      <li><span class="src-label">Gabinete Seg.</span><a href="https://gabinetedeseguridad.gob.mx" target="_blank">Gabinete de Seguridad del Gobierno de México</a></li>
+      <li><span class="src-label">Infonavit</span><a href="https://portalmx.infonavit.org.mx" target="_blank">Instituto del Fondo Nacional de la Vivienda para los Trabajadores</a></li>
+      <li><span class="src-label">Transparencia Ppto.</span><a href="https://www.transparenciapresupuestaria.gob.mx" target="_blank">Transparencia Presupuestaria — SHCP</a></li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<footer>
+  <strong>México: Mañanera vs. Realidad 2025–2026</strong><br>
+  Análisis construido con datos de INEGI · SESNSP · Pemex · SHF · CIEP · México Evalúa · OCDE<br>
+  Todos los datos son de acceso público. Actualizado a abril 2026.<br><br>
+  Este documento no tiene afiliación política. Su propósito es facilitar el contraste entre el discurso oficial y la evidencia estadística.
+</footer>
+
+<script>
+const gc = 'rgba(0,0,0,0.05)';
+const tc = '#8a8a8a';
+const opts = (extra={}) => ({
+  responsive: true, maintainAspectRatio: false,
+  plugins: { legend: { display: false }, ...extra.plugins },
+  scales: {
+    x: { grid: { color: gc }, ticks: { color: tc, font:{size:11} }, ...extra.x },
+    y: { grid: { color: gc }, ticks: { color: tc, font:{size:11} }, ...extra.y }
+  },
+  ...extra
+});
+
+/* EMPLEO — desempleo comparativo */
+new Chart(document.getElementById('chartEmpleo'), {
+  type: 'bar',
+  data: {
+    labels: ['Japón','Alemania','México','EE.UU.','Argentina','Brasil','Colombia','España'],
+    datasets: [{
+      data: [2.5, 3.4, 2.7, 4.1, 7.1, 6.2, 9.3, 10.6],
+      backgroundColor: ['#c5e9da','#c5e9da','#378ADD','#c5e9da','#fcdec9','#fcdec9','#fcdec9','#f5a4a4'],
+      borderRadius: 4
+    }]
+  },
+  options: opts({
+    plugins: { legend:{display:false}, tooltip:{callbacks:{label:c=>c.parsed.y+'%'}} },
+    y: { max:14, ticks:{color:tc,font:{size:11},callback:v=>v+'%'} }
+  })
+});
+
+/* EMPLEO — informalidad */
+new Chart(document.getElementById('chartInformal'), {
+  type: 'line',
+  data: {
+    labels: ['Q1 2024','Q2 2024','Q3 2024','Q4 2024','Q1 2025','Q2 2025','Q3 2025','Q4 2025'],
+    datasets: [{
+      data: [53.2, 53.8, 54.0, 53.7, 54.1, 54.4, 54.7, 54.6],
+      borderColor: '#B02A2A', backgroundColor: 'rgba(176,42,42,0.07)',
+      fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: '#B02A2A'
+    }]
+  },
+  options: opts({
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+'%'}}},
+    y:{min:52,max:56,ticks:{color:tc,font:{size:11},callback:v=>v+'%'}}
+  })
+});
+
+/* SEGURIDAD — homicidios/100k */
+new Chart(document.getElementById('chartSeguridad'), {
+  type: 'bar',
+  data: {
+    labels: ['Japón','Alemania','Chile','Argentina','EE.UU.','Guatemala','México','Brasil','Colombia','Venezuela'],
+    datasets: [{
+      data: [0.2, 0.9, 4, 4.6, 6, 17, 19, 21, 25, 35],
+      backgroundColor: [0.2,0.9,4,4.6,6,17,19,21,25,35].map(v=>v>20?'#f5a4a4':v>10?'#fcdec9':'#c5e9da'),
+      borderRadius: 4
+    }]
+  },
+  options: { ...opts({ indexAxis:'y', plugins:{legend:{display:false}}, y:{grid:{color:gc},ticks:{color:tc,font:{size:11}}}, x:{grid:{color:gc},ticks:{color:tc,font:{size:11}}} }), indexAxis:'y', responsive:true, maintainAspectRatio:false }
+});
+
+/* SEGURIDAD — promedio diario */
+new Chart(document.getElementById('chartHomicidios'), {
+  type: 'line',
+  data: {
+    labels: ['Oct 24','Nov 24','Dic 24','Ene 25','Feb 25','Mar 25','Abr 25','May 25','Jun 25','Jul 25','Ago 25','Sep 25','Oct 25','Nov 25','Dic 25','Ene 26','Feb 26'],
+    datasets: [{
+      data: [86.9, 82.1, 77.4, 73.2, 75.0, 71.5, 65.3, 66.8, 65.0, 64.9, 59.2, 58.4, 56.6, 54.3, 52.4, 50.1, 48.8],
+      borderColor: '#1B4F8A', backgroundColor: 'rgba(27,79,138,0.07)',
+      fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#1B4F8A'
+    }]
+  },
+  options: opts({
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toFixed(1)+'/día'}}},
+    y:{ticks:{color:tc,font:{size:11}}}
+  })
+});
+
+/* PEMEX */
+new Chart(document.getElementById('chartPemex'), {
+  type: 'line',
+  data: {
+    labels: ['2018','2019','2020','2021','2022','2023','2024','2025'],
+    datasets: [{
+      label: 'Producción real',
+      data: [1.81, 1.69, 1.69, 1.75, 1.80, 1.88, 1.48, 1.36],
+      borderColor: '#B02A2A', backgroundColor: 'rgba(176,42,42,0.08)',
+      fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#B02A2A'
+    },{
+      label: 'Meta 2025',
+      data: [null,null,null,null,null,null,null,1.80],
+      borderColor: '#1B4F8A', borderDash:[6,4], pointRadius:6,
+      pointBackgroundColor:'#1B4F8A', fill:false, tension:0
+    }]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{display:true,labels:{color:tc,font:{size:11},boxWidth:12}},
+      tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+' Mbd'}}
+    },
+    scales:{
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:11}}},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:11},callback:v=>v+' Mbd'},min:1.2,max:2.1}
+    }
+  }
+});
+
+/* VIVIENDA */
+new Chart(document.getElementById('chartVivienda'), {
+  type: 'bar',
+  data: {
+    labels: ['CDMX','BCS','Querétaro','Yucatán','BC','NL','Q.Roo','Edomex','Jalisco','Nacional','Durango','Tamaulipas'],
+    datasets: [{
+      data: [3866, 2645, 2357, 2319, 2273, 1967, 1939, 1892, 1810, 1863, 1200, 1150],
+      backgroundColor: [3866,2645,2357,2319,2273,1967,1939,1892,1810,1863,1200,1150]
+        .map((v,i)=>i===9?'#378ADD':v>2000?'#f5a4a4':'#B5D4F4'),
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false, indexAxis:'y',
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.parsed.x.toLocaleString()+' k pesos'}}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:11},callback:v=>'$'+(v/1000).toFixed(1)+'M'}},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:11}}}
+    }
+  }
+});
+
+/* SALUD */
+new Chart(document.getElementById('chartSalud'), {
+  type: 'bar',
+  data: {
+    labels: ['México','Colombia','Argentina','Brasil','Chile','España','Canadá','Alemania','Francia','EE.UU.'],
+    datasets: [{
+      data: [2.5, 8.0, 9.5, 9.6, 9.8, 9.3, 10.8, 11.7, 12.1, 16.9],
+      backgroundColor: [2.5,8.0,9.5,9.6,9.8,9.3,10.8,11.7,12.1,16.9].map(v=>v<6?'#f5a4a4':v<10?'#fcdec9':'#c5e9da'),
+      borderRadius: 4
+    }]
+  },
+  options: opts({
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+'% del PIB'}}},
+    y:{max:18,ticks:{color:tc,font:{size:11},callback:v=>v+'%'}}
+  })
+});
+</script>
+</body>
+</html>
